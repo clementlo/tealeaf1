@@ -5,3 +5,4 @@ arr.each do |e|
 end
 
 puts arr.select {|e| e.odd?}
+arr 
