@@ -26,5 +26,5 @@ elsif operator == "4"
   result = num1.to_f / num2.to_f
   message "The result is #{result}"
 else
-    "Please enter a valid selection."
+  message "Your selection was invalid."
 end
