@@ -16,3 +16,14 @@ Dealer's Cards:
     <li><%= card.to_s %></li>
   <% end %>
 </ul>
+
+<p>
+  <%= session[:player_name] %> has a total of <%= calculate_total(session[:player_cards]) %>
+</p>
+
+<p>
+  What would you like to do?
+  </br>
+  <a href='/hit' method='post'>hit</a>
+  <a href='/stay' method='post'>stay</a>
+</p>

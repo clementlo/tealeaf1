@@ -3,32 +3,6 @@ require 'sinatra'
 
 set :sessions, true
 
-helpers do
-  def calculate_total(cards) # cards
-    arr = cards.map {|e| e[1] }
-
-    total = 0
-    arr.each do |value|
-      if value == "A"
-        total += 11 
-      elsif value.to_i == 0 #J, Q, K
-        total += 10
-      else
-        total += value.to_i
-      end
-    end
-
-    #correct for Aces
-    arr.select{|e| e == 'A'}.count.times do
-      if total > 21
-        total -= 10
-      end
-    end
-    total
-  end
-    # calculate_total(session[:dealer_cards])
-end
-
 # get '/inline' do 
 #   "Hi, directly from the action!"
 # end
@@ -78,6 +52,7 @@ get '/game' do
   suits = ['H', 'D', 'S', 'C']
   cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
   session[:deck] = suits.product(cards).shuffle!
+
   # deal cards
 
   session[:player_cards] = []
@@ -86,15 +61,12 @@ get '/game' do
   session[:player_cards] << session[:deck].pop
   session[:dealer_cards] << session[:deck].pop
   session[:player_cards] << session[:deck].pop
-
-  erb :game
-end
-
-#player turn - hit or stay
-post '/hit' do
-  session[:dealer_cards] << session[:deck].pop  
-  redirect 'game'
-end
+  
+  #player turn - hit or stay
+  post '/hit' do
+    session[:dealer_cards] << session[:deck].pop
+    redirect 'game'
+  end
     # puts "Dealer has: #{dealercards[0]} and #{dealercards[1]}, for a total of #{dealertotal}"
     # puts "You have: #{mycards[0]} and #{mycards[1]}, for a total of: #{mytotal}"
     # puts ""
@@ -106,5 +78,9 @@ end
   # calculate total helper
     #session[:dealer_total] = calculate_total(session[:dealer_cards])
     #session[:player_total] = calculate_total(session[:player_cards])
+    
 
- 
+
+
+  erb :game
+end
