@@ -17,13 +17,18 @@ Dealer's Cards:
   <% end %>
 </ul>
 
-<p>
-  <%= session[:player_name] %> has a total of <%= calculate_total(session[:player_cards]) %>
-</p>
+<%= session[:player_name] %>'s total is <%=calculate_total(session[:player_cards]) %>
 
-<p>
-  What would you like to do?
-  </br>
-  <a href='/hit' method='post'>hit</a>
-  <a href='/stay' method='post'>stay</a>
-</p>
+<% if @show_buttons %>
+  <p>
+    What would you like to do?
+    </br>
+    <form action="/game/player/hit" method='post'>
+      <input type="submit" class="btn" value="Hit">
+    </form>
+    
+    <form action="/game/player/stay" method='post'>
+      <input type="submit" class="btn" value="Stay">
+    </form>
+  </p>
+<% end %>

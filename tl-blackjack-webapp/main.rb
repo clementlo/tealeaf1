@@ -3,6 +3,30 @@ require 'sinatra'
 
 set :sessions, true
 
+# get '/inline' do 
+#   "Hi, directly from the action!"
+# end
+# 
+# get '/template' do
+#   erb :mytemplate
+# end
+# 
+# get '/nested_template' do
+#   erb :"/users/profile"
+# end
+# 
+# get '/nothere' do
+#   redirect '/inline'
+# end
+# 
+# get '/form' do
+#   erb :form
+# end
+# 
+# post '/myaction' do
+#   puts params['username']
+# end
+
 helpers do
   def calculate_total(cards) # cards
     arr = cards.map {|e| e[1] }
@@ -29,30 +53,9 @@ helpers do
     # calculate_total(session[:dealer_cards])
 end
 
-# get '/inline' do 
-#   "Hi, directly from the action!"
-# end
-# 
-# get '/template' do
-#   erb :mytemplate
-# end
-# 
-# get '/nested_template' do
-#   erb :"/users/profile"
-# end
-# 
-# get '/nothere' do
-#   redirect '/inline'
-# end
-# 
-# get '/form' do
-#   erb :form
-# end
-# 
-# post '/myaction' do
-#   puts params['username']
-# end
-
+before do 
+  @show_buttons = true
+end
 
 get '/' do
   if session[:player_name]
@@ -78,6 +81,7 @@ get '/game' do
   suits = ['H', 'D', 'S', 'C']
   cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
   session[:deck] = suits.product(cards).shuffle!
+
   # deal cards
 
   session[:player_cards] = []
@@ -91,20 +95,17 @@ get '/game' do
 end
 
 #player turn - hit or stay
-post '/hit' do
-  session[:dealer_cards] << session[:deck].pop  
-  redirect 'game'
+post '/game/player/hit' do
+  session[:player_cards] << session[:deck].pop
+    if calculate_total(session[:player_cards]) > 21
+      @error = "Sorry, it looks like you busted"
+      @show_buttons = false
+    end
+  erb :game
 end
-    # puts "Dealer has: #{dealercards[0]} and #{dealercards[1]}, for a total of #{dealertotal}"
-    # puts "You have: #{mycards[0]} and #{mycards[1]}, for a total of: #{mytotal}"
-    # puts ""
-    # puts "What would you like to do? 1) hit 2) stay"
-    # hit_or_stay = gets.chomp
 
-  #dealer turn - hit or stay
-
-  # calculate total helper
-    #session[:dealer_total] = calculate_total(session[:dealer_cards])
-    #session[:player_total] = calculate_total(session[:player_cards])
-
- 
+post '/game/player/stay' do
+  @success = "You have chosen to stay."
+  @show_buttons = false
+  erb :game
+end
