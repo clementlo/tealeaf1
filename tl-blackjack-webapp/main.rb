@@ -91,6 +91,10 @@ get '/game' do
   session[:dealer_cards] << session[:deck].pop
   session[:player_cards] << session[:deck].pop
 
+ if calculate_total(session[:player_cards]) == 21
+    @success = "Congratulations, you hit blackjack!"
+    @show_buttons = false
+  end
   erb :game
 end
 
@@ -100,6 +104,9 @@ post '/game/player/hit' do
     if calculate_total(session[:player_cards]) > 21
       @error = "Sorry, it looks like you busted"
       @show_buttons = false
+    elsif calculate_total(session[:player_cards]) == 21
+    @success = "Congratulations, you hit blackjack!"
+    @show_buttons = false
     end
   erb :game
 end
@@ -107,5 +114,25 @@ end
 post '/game/player/stay' do
   @success = "You have chosen to stay."
   @show_buttons = false
+  if calculate_total(session[:dealer_cards]) == 21 
+    @error = "Sorry, the dealer hit blackjack. You lose!"
+  end
+  while calculate_total(session[:dealer_cards]) < 17
+    session[:dealer_cards] << session[:deck].pop
+    if calculate_total(session[:dealer_cards]) == 21 
+      @error = "Sorry, the dealer hit blackjack. You lose!"
+    elsif calculate_total(session[:dealer_cards]) > 21 
+      @success = "The dealer has busted! You Win!"
+    end
+  end
+  if calculate_total(session[:dealer_cards]) < 21
+    if calculate_total(session[:dealer_cards]) > calculate_total(session[:player_cards]) 
+      @error = "Sorry, the dealer wins!"
+    elsif calculate_total(session[:dealer_cards]) < calculate_total(session[:player_cards]) 
+      @success = "You win!"
+    else
+      @success = "It's a tie!"
+    end
+  end
   erb :game
 end

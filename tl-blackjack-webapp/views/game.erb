@@ -31,4 +31,8 @@ Dealer's Cards:
       <input type="submit" class="btn" value="Stay">
     </form>
   </p>
+<% else %>
+  <p>
+  The Dealer's total is <%=calculate_total(session[:dealer_cards]) %>
+  </p>
 <% end %>
