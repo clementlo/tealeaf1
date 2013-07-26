@@ -147,7 +147,6 @@ get '/game/dealer' do
   @show_buttons = false
   @hide_first_card = false
   dealer_total = calculate_total(session[:dealer_cards])
-  # player_total = calculate_total(session[:player_cards])
   if dealer_total == 21 
     @error = "Sorry, the dealer hit blackjack. #{session[:player_name]} loses!"
   elsif dealer_total > 21
@@ -170,10 +169,11 @@ end
 get '/game/compare' do
   @hide_first_card = false
   @show_buttons = false
+  player_total = calculate_total(session[:player_cards])
   dealer_total = calculate_total(session[:dealer_cards])
-  if dealer_total > calculate_total(session[:player_cards])
+  if dealer_total > player_total
     @error = "Sorry, the dealer wins!"
-  elsif dealer_total < calculate_total(session[:player_cards])
+  elsif dealer_total < player_total
    @success = "#{session[:player_name]} wins!"
   else
    @success = "It's a tie!"
