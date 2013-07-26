@@ -74,6 +74,7 @@ end
 
 before do 
   @show_buttons = true
+  @show_first_card = 0
 end
 
 get '/' do
@@ -139,6 +140,7 @@ end
 post '/game/player/stay' do
   @success = "#{session[:player_name]} has chosen to stay."
   @show_buttons = false
+  @show_first_card= 1
   # dealer_total = calculate_total(session[:dealer_cards])
   # player_total = calculate_total(session[:player_cards])
   if calculate_total(session[:dealer_cards]) == 21 

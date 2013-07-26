@@ -5,14 +5,13 @@
 
 <div class="well">
   <h4>Dealer's Cards:</h4>
-    <% count = 0 %>
     <% session[:dealer_cards].each do |card| %>
-      <% if count == 0 %>
+      <% if @show_first_card == 0 %>
           <img src= '/images/cards/cover.jpg' class='card_image'>
-          <% count += 1 %>
+          <% @show_first_card += 1 %>
       <% else %>
           <%= card_image(card) %>
-          <% count += 1 %>
+          <% @show_first_card += 1 %>
       <% end %>
     <% end %>
 </div>
