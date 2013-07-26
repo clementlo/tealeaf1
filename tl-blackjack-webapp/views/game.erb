@@ -5,15 +5,23 @@
 
 <div class="well">
   <h4>Dealer's Cards:</h4>
+    
     <% session[:dealer_cards].each do |card| %>
-      <% if @show_first_card == 0 %>
+      <% if @hide_first_card%>
           <img src= '/images/cards/cover.jpg' class='card_image'>
-          <% @show_first_card += 1 %>
+          <% @hide_first_card = false %>
       <% else %>
           <%= card_image(card) %>
-          <% @show_first_card += 1 %>
       <% end %>
+    <% end %> 
+
+    <% if @show_dealer_hit_button %>
+    <p> Dealer has <%= calculate_total(session[:dealer_cards])%> and will hit
+      <form action="/game/dealer/hit" method='post'>
+        <input type ="submit" class='btn btn-primary' value="Click here to hit">
+      </form>
     <% end %>
+  </p>
 </div>
 
 <div class="well">

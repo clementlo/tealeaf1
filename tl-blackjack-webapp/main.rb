@@ -74,7 +74,8 @@ end
 
 before do 
   @show_buttons = true
-  @show_first_card = 0
+  @show_dealer_hit_button = false
+  @hide_first_card = true
 end
 
 get '/' do
@@ -139,29 +140,43 @@ end
 
 post '/game/player/stay' do
   @success = "#{session[:player_name]} has chosen to stay."
+  redirect '/game/dealer'
+end
+
+get '/game/dealer' do
   @show_buttons = false
-  @show_first_card= 1
-  # dealer_total = calculate_total(session[:dealer_cards])
+  @hide_first_card = false
+  dealer_total = calculate_total(session[:dealer_cards])
   # player_total = calculate_total(session[:player_cards])
-  if calculate_total(session[:dealer_cards]) == 21 
+  if dealer_total == 21 
     @error = "Sorry, the dealer hit blackjack. #{session[:player_name]} loses!"
+  elsif dealer_total > 21
+    @success = "The dealer has busted! #{session[:player_name]} wins!"
+  elsif dealer_total < 17
+    @show_dealer_hit_button = true
+  else # >=17
+    redirect '/game/compare'
   end
-  while calculate_total(session[:dealer_cards]) < 17
-    session[:dealer_cards] << session[:deck].pop
-    if calculate_total(session[:dealer_cards]) == 21 
-      @error = "Sorry, the dealer hit blackjack. #{session[:player_name]} loses!"
-    elsif calculate_total(session[:dealer_cards]) > 21 
-      @success = "The dealer has busted! #{session[:player_name]} wins!"
-    end
+erb :game 
+end
+
+post '/game/dealer/hit' do
+  @hide_first_card = false
+  @show_buttons = false
+  session[:dealer_cards] << session[:deck].pop
+  redirect '/game/dealer'
+end
+
+get '/game/compare' do
+  @hide_first_card = false
+  @show_buttons = false
+  dealer_total = calculate_total(session[:dealer_cards])
+  if dealer_total > calculate_total(session[:player_cards])
+    @error = "Sorry, the dealer wins!"
+  elsif dealer_total < calculate_total(session[:player_cards])
+   @success = "#{session[:player_name]} wins!"
+  else
+   @success = "It's a tie!"
   end
-  if calculate_total(session[:dealer_cards]) < 21
-    if calculate_total(session[:dealer_cards]) > calculate_total(session[:player_cards])
-      @error = "Sorry, the dealer wins!"
-    elsif calculate_total(session[:dealer_cards]) < calculate_total(session[:player_cards])
-      @success = "#{session[:player_name]} wins!"
-    else
-      @success = "It's a tie!"
-    end
-  end
-  erb :game
+erb :game   
 end
