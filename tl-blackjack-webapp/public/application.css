@@ -10,3 +10,12 @@ form#stay_form {
 img.card_img {
   margin: 0px 5px 5px 0px
 }
+
+form#play_again_form {
+  float: left;
+  margin-right: 10px
+}
+
+form#quit_form {
+  float: left;
+}
