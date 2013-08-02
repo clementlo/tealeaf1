@@ -3,10 +3,17 @@
 <p>Welcome <%= session[:player_name] %></p>
 
 <% if @show_play_again %>
-  <p> <strong>Play again?</strong>
-    <a href="/game" class="btn btn-primary">Yes</a>
+  <% if session[:player_pot].to_i > 0 %>
+    <p> <strong>Play again?</strong>
+      <a href="/bet" class="btn btn-primary">Yes</a>
+      <a href="/game_over" class="btn btn-default">No</a>
+    </p>
+  <% else %>
+    <p>You're out of money. Would you like to start a new game?
+    <a href='/new_player' class="btn btn-primary">Yes</a>
     <a href="/game_over" class="btn btn-default">No</a>
-  </p>
+    </p>
+  <% end %>
 <% end %>
 
 
@@ -35,8 +42,8 @@
     <% session[:player_cards].each do |card| %>
       <%= card_image(card) %>
     <% end %>
+  <h5><%= session[:player_name] %> has $<%= session[:player_pot] %> and has bet $<%= session[:player_bet] %></h5>
 </div>
-
 <%= session[:player_name] %>'s total is <%=calculate_total(session[:player_cards]) %>
 
 <% if @show_buttons %>

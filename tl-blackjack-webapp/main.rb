@@ -5,6 +5,7 @@ set :sessions, true
 
 BLACKJACK_AMOUNT = 21
 DEALER_MIN_HIT = 17
+INITIAL_BALANCE = 500
 
 # get '/inline' do 
 #   "Hi, directly from the action!"
@@ -75,19 +76,21 @@ helpers do
   end
 
   def winner!(msg)
-    @success = "<strong>#{session[:player_name]} wins!</strong> #{msg}"
     @show_buttons = false
     @show_play_again = true
-  end
+    session[:player_pot] += session[:player_bet]
+    @success = "<strong>#{session[:player_name]} wins! </strong> #{msg} Your new balance is #{session[:player_pot]}."
+  end  
 
   def loser!(msg)
-    @error = "<strong>#{session[:player_name]} loses!</strong> #{msg}"
     @show_buttons = false
     @show_play_again = true
+    session[:player_pot] -= session[:player_bet]
+    @error = "<strong>#{session[:player_name]} loses!</strong> #{msg} Your new balance is $#{session[:player_pot]}."
   end
 
   def tie!(msg)
-    @success = "<strong>It's a tie!</strong> #{msg}"
+    @success = "<strong>It's a tie!</strong> #{msg} Your remains at $#{@balance}."
     @show_buttons = false
     @show_play_again = true
   end
@@ -110,6 +113,7 @@ get '/' do
 end
 
 get '/new_player' do
+  session[:player_pot] = INITIAL_BALANCE
   erb :new_player
 end
 
@@ -118,13 +122,31 @@ post '/new_player' do
     @error = "Name is required"
     halt erb(:new_player)
   end
-
   session[:player_name] = params[:player_name]
-  redirect '/game'
+  redirect '/bet'
+end
+
+get '/bet' do
+  session[:player_bet] = nil
+  erb :bet
+end
+
+post '/bet' do
+  if params[:player_bet].nil? || params[:player_bet].to_i <= 0
+    @error = "Bet amount must be greater than 0"
+    halt erb(:bet)
+  elsif params[:player_bet].to_i > session[:player_pot].to_i
+    @error = "Bet amount must not be greater than $#{session[:player_pot]}"
+    halt erb(:bet)
+  else #accept bet 
+    session[:player_bet] = params[:player_bet].to_i
+    redirect '/game'
+  end
 end
 
 
 get '/game' do
+
   # set up initial game values
   # Create a deck and put it into the session.
   suits = ['H', 'D', 'S', 'C']
